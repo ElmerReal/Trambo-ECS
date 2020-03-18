@@ -1,0 +1,100 @@
+Description:  Usefull roles to use for ecs resources
+Resources:
+  AutoscalingRole: #Role de autoscaling
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: [application-autoscaling.amazonaws.com]
+          Action: ['sts:AssumeRole']
+      Path: /
+  EC2Role: #Role para las instancias
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: [ec2.amazonaws.com]
+          Action: ['sts:AssumeRole']
+      Path: /  
+  ECSServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: [ecs.amazonaws.com]
+          Action: ['sts:AssumeRole']
+      Path: /
+  AutoscalingPolicy:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: 'AutoscalingPolicyStack'
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'application-autoscaling:*'
+              - 'ecs:DescribeServices'
+              - 'ecs:UpdateService'
+            Resource: '*'
+      Roles:
+        - !Ref AutoscalingRole
+  EC2Policy:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: 'EC2PolicyStack'
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'ecs:CreateCluster'
+              - 'ecs:DeregisterContainerInstance'
+              - 'ecs:DiscoverPollEndpoint'
+              - 'ecs:Poll'
+              - 'ecs:RegisterContainerInstance'
+              - 'ecs:StartTelemetrySession'
+              - 'ecs:Submit*'
+              - 'logs:CreateLogStream'
+              - 'logs:PutLogEvents'
+              - 'ecr:GetAuthorizationToken'
+              - 'ecr:BatchGetImage'
+              - 'ecr:GetDownloadUrlForLayer'
+            Resource: '*'
+      Roles:
+        - !Ref EC2Role
+  ECSPolicy:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: 'ECSPolicyStack'
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'elasticloadbalancing:DeregisterInstancesFromLoadBalancer'
+              - 'elasticloadbalancing:DeregisterTargets'
+              - 'elasticloadbalancing:Describe*'
+              - 'elasticloadbalancing:RegisterInstancesWithLoadBalancer'
+              - 'elasticloadbalancing:RegisterTargets'
+              - 'ec2:Describe*'
+              - 'ec2:AuthorizeSecurityGroupIngress'
+            Resource: '*'
+      Roles:
+        - !Ref ECSServiceRole
+Outputs:
+  AutoscalingRole:
+    Description: Referencia Rol AutoScaling
+    Value: !GetAtt [AutoscalingRole, Arn]
+  EC2Role:
+    Description: Referencia Rol EC2
+    Value: !Ref EC2Role
+  ECSServiceRole:
+    Description: Referencia Rol ECS
+    Value: !Ref ECSServiceRole

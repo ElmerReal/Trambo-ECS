@@ -1,0 +1,40 @@
+Description:  Template para instancias.
+
+Parameters: 
+  RefSubnetPublica: 
+    Description: "Subnet Publica"
+    Type: String
+  RefSG: 
+    Description: "Security group"
+    Type: String
+  RefDefaultSG:
+    Description: "Default Security group"
+    Type: String  
+  EC2TYPE:
+    Description: "Tipo EC2TYPE"
+    Type: String
+    Default: t2.micro
+
+Resources:
+  MyEC2Instance: 
+    Type: AWS::EC2::Instance
+    Properties: 
+      ImageId: "ami-0e8c04af2729ff1bb"
+      KeyName: "Key"
+      InstanceType: !Ref EC2TYPE
+      NetworkInterfaces: 
+      - AssociatePublicIpAddress: "true"
+        DeviceIndex: "0"
+        SubnetId: !Ref RefSubnetPublica
+        GroupSet: 
+          - !Ref RefSG #Security group publica
+          - !Ref RefDefaultSG #Default security group de la VPC
+      Tags:
+        - Key: Name
+          Value:
+            !Join
+              - '-'
+              - - 'Instancia'
+                - !Ref AWS::StackName
+        - Key: Owner
+          Value: elmerreal98@gmail.com 

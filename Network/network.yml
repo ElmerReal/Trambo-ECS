@@ -1,0 +1,177 @@
+Description:  Estrcutra que crea la VPC.
+Parameters: 
+  DbSubnetIpBlocks: 
+      Description: "Comma-delimited list of three CIDR blocks of all subnets"
+      Type: CommaDelimitedList
+      Default: "10.0.0.0/24, 10.0.1.0/24, 10.0.2.0/24, 10.0.3.0/24, 10.0.4.0/24, 10.0.5.0/24"
+Resources:
+  VPC: #>>>>>>>>>>>>>>>>>> VPC <<<<<<<<<<<<<<<<<<<<<<<<<<
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+      - Key: Name
+        Value: VPC-Elmer
+  SubnetPublic1: #>>>>>>>>>>>>> * Public Subnet <<<<<<<<<<<<<<<<<<<<<<<<<<<
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId:
+        Ref: VPC
+      CidrBlock: !Select [ 0, !Ref DbSubnetIpBlocks ]
+      AvailabilityZone: "us-west-2a"
+      Tags:
+      - Key: Name
+        Value: SN-Elmer-Public-1
+  SubnetPublic2: #>>>>>>>>>>>>> * Public Subnet <<<<<<<<<<<<<<<<<<<<<<<<<<<
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId:
+        Ref: VPC
+      CidrBlock: !Select [ 1, !Ref DbSubnetIpBlocks ]
+      AvailabilityZone: "us-west-2b"
+      Tags:
+      - Key: Name
+        Value: SN-Elmer-Public-2
+  SubnetPublic3: #>>>>>>>>>>>>> * Public Subnet <<<<<<<<<<<<<<<<<<<<<<<<<<<
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId:
+        Ref: VPC
+      CidrBlock: !Select [ 2, !Ref DbSubnetIpBlocks ]
+      AvailabilityZone: "us-west-2c"
+      Tags:
+      - Key: Name
+        Value: SN-Elmer-Public-3
+  SubnetPrivate1: #>>>>>>>>>>>>> / Private Subnet <<<<<<<<<<<<<<<<<<<<<<<<<<<
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId:
+        Ref: VPC
+      CidrBlock: !Select [ 3, !Ref DbSubnetIpBlocks ]
+      AvailabilityZone: "us-west-2a"
+      Tags:
+      - Key: Name
+        Value: SN-Elmer-Private-1
+  SubnetPrivate2: #>>>>>>>>>>>>> / Private Subnet <<<<<<<<<<<<<<<<<<<<<<<<<<<
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId:
+        Ref: VPC
+      CidrBlock: !Select [ 4, !Ref DbSubnetIpBlocks ]
+      AvailabilityZone: "us-west-2b"
+      Tags:
+      - Key: Name
+        Value: SN-Elmer-Private-2
+  SubnetPrivate3: #>>>>>>>>>>>>> / Private Subnet <<<<<<<<<<<<<<<<<<<<<<<<<<<
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId:
+        Ref: VPC
+      CidrBlock: !Select [ 5, !Ref DbSubnetIpBlocks ]
+      AvailabilityZone: "us-west-2c"
+      Tags:
+      - Key: Name
+        Value: SN-Elmer-Private-3
+  IGW: ##>>>>>>>>>>>>> INTERNET GATEWAY <<<<<<<<<<<<<<<<<<<<<<<<<<<
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+      - Key: Name
+        Value: IGW-Elmer
+  RouteTablePublic: ##>>>>>>>>>>>>> ROUTE TABLE PUBLICA <<<<<<<<<<<<<<<<<<<<<<<<<<<
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:  
+        Ref: VPC
+      Tags:
+      - Key: Name
+        Value: RT-Public-Elmer
+  RouteTablePrivate: ##>>>>>>>>>>>>> ROUTE TABLE PRIVADA <<<<<<<<<<<<<<<<<<<<<<<<<<<
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:  
+        Ref: VPC
+      Tags:
+      - Key: Name
+        Value: RT-Private-Elmer
+  Asociacion1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties: 
+      RouteTableId: !Ref RouteTablePublic
+      SubnetId: !Ref SubnetPublic1
+  Asociacion2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties: 
+      RouteTableId: !Ref RouteTablePublic
+      SubnetId: !Ref SubnetPublic2
+  Asociacion3:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties: 
+      RouteTableId: !Ref RouteTablePublic
+      SubnetId: !Ref SubnetPublic3
+  Asociacion4:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties: 
+      RouteTableId: !Ref RouteTablePrivate
+      SubnetId: !Ref SubnetPrivate1
+  Asociacion5:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties: 
+      RouteTableId: !Ref RouteTablePrivate
+      SubnetId: !Ref SubnetPrivate2
+  Asociacion6:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties: 
+      RouteTableId: !Ref RouteTablePrivate
+      SubnetId: !Ref SubnetPrivate3
+
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId:
+        Ref: VPC
+      InternetGatewayId:
+        Ref: IGW
+  Route1:
+    Type: AWS::EC2::Route
+    DependsOn: IGW
+    Properties:
+      RouteTableId: !Ref RouteTablePublic
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref IGW
+  SecurityGroupPublic:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: ECS Security Group
+      VpcId: !Ref 'VPC'
+      Tags:
+        - Key: Name
+          Value: DMZ-Elmer
+  SecurityGroupPublicHTTPinbound:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref 'SecurityGroupPublic'
+      IpProtocol: tcp
+      FromPort: '80'
+      ToPort: '80'
+      CidrIp: 0.0.0.0/0
+  SecurityGroupPublicSSHinbound:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref 'SecurityGroupPublic'
+      IpProtocol: tcp
+      FromPort: '22'
+      ToPort: '22'
+      CidrIp: 0.0.0.0/0
+Outputs:
+  RefSubnetPublic1:
+    Description: Id Subnet publilc 1
+    Value:  !Join [ ",",  [!Ref SubnetPublic1,!Ref SubnetPublic2,!Ref SubnetPublic3] ]
+  RefSG:
+    Description: Lista de security groups
+    Value: !Join [ ",",  [!GetAtt VPC.DefaultSecurityGroup  ,!Ref SecurityGroupPublic] ]
+  RefVPC:
+    Description: Id VPC
+    Value: !Ref VPC

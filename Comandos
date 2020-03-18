@@ -1,0 +1,26 @@
+$(aws ecr get-login --no-include-email --region us-west-2)
+
+https://medium.com/boltops/gentle-introduction-to-how-aws-ecs-works-with-example-tutorial-cea3d27ce63d
+
+docker build -t nginx-elmer-trambo .
+
+ecs-templates-elmer
+
+aws s3 sync . s3://ecs-templates-elmer
+aws s3 sync s3://ecs-templates-elmer .
+
+Image container nginx-elmer-trambo
+
+Cluster
+https://ecs-templates-elmer.s3-us-west-2.amazonaws.com/principal_cluster.yml 
+
+https://ecs-templates-elmer.s3-us-west-2.amazonaws.com/principal.yml
+https://ecs-templates-elmer.s3-us-west-2.amazonaws.com
+
+
+ami-014a2e30da708ee8b
+
+ https://ecs-templates-elmer.s3-us-west-2.amazonaws.com/principal_roles.yml 
+
+
+ https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/quickref-ecs.partial.html

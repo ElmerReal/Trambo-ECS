@@ -1,0 +1,16 @@
+Description:  Ejercicio ECS utilizando cloudformation
+
+Parameters: 
+  BucketS3: 
+    Description: "URL del Bucket donde estaran almacenado los templates templates"
+    Type: String
+    
+Resources:
+  ClusterStack: 
+    Type: AWS::CloudFormation::Stack
+    Properties: 
+      TemplateURL: 
+        !Join
+          - ""
+          - - !Ref BucketS3
+            - "/Cluster/cluster.yml"

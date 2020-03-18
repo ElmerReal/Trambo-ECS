@@ -1,0 +1,174 @@
+Description:  Estructura que crea y configura un loadbalancer
+
+Parameters: 
+  RefSubnetPublica: 
+    Description: "Subnet Publica"
+    Type: String
+  RefSG: 
+    Description: "Security group"
+    Type: String
+  RefVPC: 
+    Description: "Id de la vpc creada"
+    Type: String
+  ParentStackName:
+    Type: String
+  EC2TYPE:
+    Description: "Tipo EC2TYPE"
+    Type: String
+    Default: t2.micro
+  Keyname:
+    Description: "Nombre de la llave"
+    Type: String
+    Default: Key
+  ClusterPadre:
+    Description: "Nombre del cluster padre"
+    Type: String
+  AutoscalingRole:
+    Description: "Rol autoscaling"
+    Type: String
+  EC2Role:
+    Description: "Rol EC2"
+    Type: String
+  ECSServiceRole:
+    Description: "Rol ECS"
+    Type: String
+Resources:
+  ECSCluster: #Cluster Creado
+    Type: AWS::ECS::Cluster
+    Properties: 
+      ClusterName:
+        !Join
+            - '-'
+            - - 'Cluster'
+              - !Ref ClusterPadre
+      Tags:
+        - Key: Owner
+          Value: elmerreal98@gmail.com
+  taskdefinition: #TaskDefinition
+    Type: AWS::ECS::TaskDefinition
+    Properties: 
+      ContainerDefinitions: 
+      - 
+        Name: "Nginx-Service"
+        Image: "nginx-elmer-trambo"
+        PortMappings: 
+          - 
+            ContainerPort: 80
+            HostPort: 80
+        Memory: 300
+        Essential: true
+      RequiresCompatibilities: 
+        -  EC2
+      Tags:
+        - Key: Owner
+          Value: elmerreal98@gmail.com
+  service:
+    Type: AWS::ECS::Service
+    DependsOn: ALBListener
+    Properties:
+      Cluster: !Ref 'ECSCluster'
+      DesiredCount: '0'
+      LoadBalancers:
+      - ContainerName: "Nginx-Service"
+        ContainerPort: '80'
+        TargetGroupArn: !Ref 'ECSTG'
+      Role: !Ref 'ECSServiceRole'
+      TaskDefinition: !Ref 'taskdefinition'
+
+  ServiceScalingTarget:
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
+    DependsOn: service
+    Properties:
+      MaxCapacity: 1
+      MinCapacity: 1
+      ResourceId: !Join ['', [service/, !Ref 'ECSCluster', /, !GetAtt [service, Name]]]
+      RoleARN: !Ref AutoscalingRole
+      ScalableDimension: ecs:service:DesiredCount
+      ServiceNamespace: ecs
+  ECSALB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties: 
+      Name:
+        !Join
+          - '-'
+          - - 'ECSALB'
+            - !Ref ParentStackName
+      Type: application
+      Scheme: internet-facing
+      LoadBalancerAttributes:
+      - Key: idle_timeout.timeout_seconds
+        Value: '30'
+      Subnets: !Split [",",!Ref 'RefSubnetPublica']
+      SecurityGroups: !Split [",",!Ref 'RefSG']
+      Tags:
+        - Key: Owner
+          Value: elmerreal98@gmail.com
+  ALBListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+      - Type: forward
+        TargetGroupArn: !Ref 'ECSTG'
+      LoadBalancerArn: !Ref 'ECSALB'
+      Port: '80'
+      Protocol: HTTP
+  ECSALBListenerRule: #Listener rule
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    DependsOn: ALBListener
+    Properties:
+      Actions:
+      - Type: forward
+        TargetGroupArn: !Ref 'ECSTG'
+      Conditions:
+      - Field: path-pattern
+        Values: [/]
+      ListenerArn: !Ref 'ALBListener'
+      Priority: 1
+  ECSTG: #Targe group
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    DependsOn: ECSALB
+    Properties:
+      HealthCheckIntervalSeconds: 10
+      HealthCheckPath: /
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 2
+      Name: ECSTG
+      Port: 80
+      Protocol: HTTP
+      UnhealthyThresholdCount: 2
+      VpcId: !Ref 'RefVPC'
+  ECSAutoScalingGroup: #Autoscaling group
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      VPCZoneIdentifier: !Split [",",!Ref 'RefSubnetPublica']
+      LaunchConfigurationName: !Ref 'LaunchConf'
+      MinSize: 1
+      MaxSize: 1
+      DesiredCapacity: 1
+    CreationPolicy:
+      ResourceSignal:
+        Timeout: PT15M
+    UpdatePolicy:
+      AutoScalingReplacingUpdate:
+        WillReplace: 'true'   
+  LaunchConf: #Launch Configuration
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Properties: 
+      AssociatePublicIpAddress: True
+      ImageId: "ami-014a2e30da708ee8b"
+      IamInstanceProfile: !Ref 'EC2InstanceProfile'
+      SecurityGroups: !Split [",",!Ref 'RefSG']
+      InstanceType: !Ref EC2TYPE
+      KeyName: !Ref Keyname
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash -xe
+          echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
+          yum install -y aws-cfn-bootstrap
+          /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource ECSAutoScalingGroup --region ${AWS::Region}
+  EC2InstanceProfile: #Se usa para attachar un rol a una instancia
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles: [!Ref 'EC2Role']
