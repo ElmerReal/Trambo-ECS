@@ -3,8 +3,8 @@ March 9, 2020
 
 Index
 - [Instructions](#Instructions)
-- [Folder Structure](#Folder-Hierarchy)
-- Solution Explanation
+- [Folder Hierarchy](#Folder-Hierarchy)
+- [Solution Explanation](#Solution-Explanation)
 
 ## Instructions
 
@@ -40,7 +40,7 @@ Excercise 2 (Provide resources needed by ECS using cloudformation):
         │   index.html 
 ```
 
-
+## Solution Explanation
 The main idea of the exercise its provide all the resources needed by the ECS Cluster in order to work properly.
 
 The templates used by the stack are separated by modules depending their kind and functionality.
