@@ -26,4 +26,20 @@ CIDR  | Nombre | Tipo
 10.0.5.0/24  | SN-Elmer-Private-3 | privada
 
 # Network/loadbalancer.yml
-The file  [loadbalancer](/Network/loadbalanceer.yml) is the template which creates all the resources needed by the VPC.
+The file  [loadbalancer](/Network/loadbalanceer.yml) is the template which creates all the resources needed by the ECS Cluster and the Application Load Balancer.
+
+The resources created are:
+
+Nombre | Tipo
+------------- | -------------
+ECSCluster | AWS::ECS::Cluster
+taskdefinition |  AWS::ECS::TaskDefinition
+service | AWS::ECS::Service
+ServiceScalingTarget | AWS::ApplicationAutoScaling::ScalableTarget
+ECSALB | AWS::ElasticLoadBalancingV2::LoadBalancer
+ALBListener | AWS::ElasticLoadBalancingV2::Listener
+ECSALBListenerRule | AWS::ElasticLoadBalancingV2::ListenerRule
+ECSTG | AWS::ElasticLoadBalancingV2::TargetGroup
+ECSAutoScalingGroup | AWS::AutoScaling::AutoScalingGroup
+LaunchConf | AWS::AutoScaling::LaunchConfiguration
+EC2InstanceProfile | AWS::IAM::InstanceProfile
