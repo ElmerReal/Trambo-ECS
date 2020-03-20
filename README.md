@@ -94,7 +94,7 @@ The file [principal](/principal.yml) is in charge of calls all the others templa
                 !Join
                 - ""
                 - - !Ref BucketS3
-                    - "/Network/network.yml"
+                    - "/Roles/roles.yml"
 
         
         ```
