@@ -1,6 +1,9 @@
 # Network/network.yml
 The file  [network](/Network/network.yml) is the template which creates all the resources needed by the VPC.
 
+The complete diagram is the following:
+![alt text](/Pictures/CloudFormation1.png)
+
 ## RouteTable publica
 
 Destino  | Target
