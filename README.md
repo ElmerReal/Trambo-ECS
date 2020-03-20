@@ -61,7 +61,9 @@ The file [principal](/principal.yml) is in charge of calls all the others templa
 - Parameters
 
     This block indicates the parameters needed by the stack, in this case when the usera create the stack he also has to provide the values of this parameters.
+
         ```
+
         BucketS3: 
             Description: "URL del Bucket donde estaran almacenado los templates templates"
             Type: String
@@ -73,6 +75,7 @@ The file [principal](/principal.yml) is in charge of calls all the others templa
             - t2.micro
             - t2.medium
             - t2.large
+            
         ```
 - Resources
 
