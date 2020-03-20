@@ -3,7 +3,7 @@ March 9, 2020
 
 Index
 - [Instructions](#Instructions)
-- [Folder Structure](#Folder-structure)
+- [Folder Structure](#Folder-Hierarchy)
 - Solution Explanation
 
 ## Instructions
@@ -16,7 +16,29 @@ Excercise 2 (Provide resources needed by ECS using cloudformation):
 - Create a task definition using ngninx container pushed to ECR repository.
 - Create an ECS Service to use the task definition previously created and public the container throughth de Application Load Balancer.
 
-## Folder structure
+## Folder Hierarchy
+
+```
+./
+│   README.md
+│   principal.yml    
+│
+└───Network
+│   |   loadbalancer.yml
+│   |   network.yml
+|   |   README.md
+|   
+└───Roles
+│   │   roles.yml
+│   │   README.md
+|   
+└───Imagen
+    │   Dockerfile
+    |   README.md
+    |
+    └───page
+        │   index.html 
+```
 
 
 The main idea of the exercise its provide all the resources needed by the ECS Cluster in order to work properly.
