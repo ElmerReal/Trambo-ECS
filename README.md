@@ -117,7 +117,7 @@ The file [principal](/principal.yml) is in charge of calls all the others templa
 
     - LoadBalancerStack
 
-        This block creates a RDS object and pass as string parameter all the privates subnets, separates by a comma, and sends the security group, that just have the 3306 port open, and the VPC default security group.
+        This block creates all realted with application load balancer, autoscaling group and ecs cluster. Also this tempplate receive as parameter the id of some roles created in roles neested stack and also values related to the VPC.
 
         ```
             LoadBalancerStack: 
