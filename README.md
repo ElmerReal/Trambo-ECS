@@ -50,7 +50,7 @@ The templates used tho provide all the stack resources are separated by modules 
     In the file roles.yml were created all the policies and roles needed for the VPC, LoadBalancer, ECS cluster, ALB, etc.
 
 The complete diagrama is the following:
-![alt text](/Imagenes/Pic1.png)
+![alt text](/Pictures/Pic1.png)
 
 # principal.yml
 The file [principal](/principal.yml) is in charge of calls all the others templates and manage the parameters and outputs, works like a bridge because can take a ouptup of a specific template and send as input for another one. This file is structured as following:
