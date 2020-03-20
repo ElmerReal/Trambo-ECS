@@ -58,6 +58,22 @@ The file [principal](/principal.yml) is in charge of calls all the others templa
 - Description
 
     Is a string that describes the template
+- Parameters
+
+    This block indicates the parameters needed by the stack, in this case when the usera create the stack he also has to provide the values of this parameters.
+        ```
+        BucketS3: 
+            Description: "URL del Bucket donde estaran almacenado los templates templates"
+            Type: String
+        EC2TYPE:
+            Description: "Tipo EC2"
+            Type: String
+            Default: t2.micro
+            AllowedValues: 
+            - t2.micro
+            - t2.medium
+            - t2.large
+        ```
 - Resources
 
     This block indicates which resources will be used and calls another templates.
