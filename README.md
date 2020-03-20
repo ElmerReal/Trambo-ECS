@@ -3,7 +3,7 @@ March 9, 2020
 
 Index
 - [Instructions](#Instructions)
-- [Folder Structure](#Folderstructure)
+- [Folder Structure](#Folder structure)
 - Solution Explanation
 
 ## Instructions
