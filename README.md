@@ -1,7 +1,7 @@
 # Trambo-ECS
 March 9, 2020
 
-Index
+## Index
 - [Instructions](#Instructions)
 - [Folder Hierarchy](#Folder-Hierarchy)
 - [Solution Explanation](#Solution-Explanation)
