@@ -2,7 +2,7 @@
 March 9, 2020
 
 Index
-- [Instructions](# Instructions)
+- [Instructions](#Instructions)
 - Files Structure
 - Explanation Modules
 
