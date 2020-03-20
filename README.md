@@ -41,16 +41,16 @@ Excercise 2 (Provide resources needed by ECS using cloudformation):
 ```
 
 ## Solution Explanation
-The main idea of the exercise its provide all the resources needed by the ECS Cluster in order to work properly.
+The main idea of the exercise its provide all the resources needed by the ECS Cluster in order to work properly via CloudFormation templates.
 
-The templates used by the stack are separated by modules depending their kind and functionality.
+The templates used tho provide all the stack resources are separated by modules depending their kind and functionality.
 1. [Network](/Network)
-    In the nework.yml file were created all the resources needed for the VPC.
+    In the nework.yml file were created all the resources needed for the VPC and the ECS cluster.
 2. [Roles](/Role)
     In the file roles.yml were created all the policies and roles needed for the VPC, LoadBalancer, ECS cluster, ALB, etc.
 
 The complete diagrama is the following:
-![alt text](/Imagenes/CloudFormation1.png)
+![alt text](/Imagenes/Pic1.png)
 
 # principal.yml
 The file [principal](/principal.yml) is in charge of calls all the others templates and manage the parameters and outputs, works like a bridge because can take a ouptup of a specific template and send as input for another one. This file is structured as following:
