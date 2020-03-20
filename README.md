@@ -94,7 +94,8 @@ The file [principal](/principal.yml) is in charge of calls all the others templa
                 !Join
                 - ""
                 - - !Ref BucketS3
-                
+                    - "/Network/network.yml"
+
         
         ```
 
@@ -106,8 +107,11 @@ The file [principal](/principal.yml) is in charge of calls all the others templa
             NetworkStack: 
                 Type: AWS::CloudFormation::Stack
                 Properties: 
-                TemplateURL: "https://trambo-elmer.s3-us-west-2.amazonaws.com/CloudFormation/Network/network.yml"
-
+                TemplateURL: 
+                    !Join
+                    - ""
+                    - - !Ref BucketS3
+                        - "/Network/network.yml"
         
         ```
 
