@@ -3,8 +3,8 @@ March 9, 2020
 
 Index
 - [Instructions](#Instructions)
-- Files Structure
-- Explanation Modules
+- Folder Structure
+- Solution Explanation
 
 ## Instructions
 
@@ -15,6 +15,9 @@ Excercise 2 (Provide resources needed by ECS using cloudformation):
 - Create an application load balancer to receive the http trafic to ngnix container.
 - Create a task definition using ngninx container pushed to ECR repository.
 - Create an ECS Service to use the task definition previously created and public the container throughth de Application Load Balancer.
+
+## Folder structure
+
 
 The main idea of the exercise its provide all the resources needed by the ECS Cluster in order to work properly.
 
