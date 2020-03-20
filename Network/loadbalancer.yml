@@ -50,7 +50,7 @@ Resources:
       ContainerDefinitions: 
       - 
         Name: "Nginx-Service"
-        Image: "492266378106.dkr.ecr.us-west-2.amazonaws.com/nginx-elmer-trambo:latests"
+        Image: "492266378106.dkr.ecr.us-west-2.amazonaws.com/nginx-elmer-trambo:latest"
         PortMappings: 
           - 
             ContainerPort: 80
