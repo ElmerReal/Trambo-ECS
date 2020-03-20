@@ -6,7 +6,9 @@ docker build -t nginx-elmer-trambo .
 
 ecs-templates-elmer
 
+Cargar
 aws s3 sync . s3://ecs-templates-elmer
+Descargar
 aws s3 sync s3://ecs-templates-elmer .
 
 Image container nginx-elmer-trambo
