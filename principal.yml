@@ -1,8 +1,8 @@
-Description:  Ejercicio ECS utilizando cloudformation
+Description:  Principal template to provide ECS cluster an all needed resources
 
 Parameters: 
   BucketS3: 
-    Description: "URL del Bucket donde estaran almacenado los templates templates"
+    Description: "URL del Bucket donde estaran almacenado los templates"
     Type: String
   EC2TYPE:
     Description: "Tipo EC2"
@@ -12,6 +12,43 @@ Parameters:
       - t2.micro
       - t2.medium
       - t2.large
+  Region:
+    Description: "Region donde residira las subnet"
+    Type: String
+    Default: us-west-2
+    AllowedValues: 
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+  OwnerEmail:
+      Description: "email of the owner"
+      Default: "elmerreal98@gmail.com"
+      Type: String
+  IpBlockPublicSubnet: 
+      Description: "Comma-delimited list of three Public CIDR blocks of all subnets"
+      Type: String
+      Default: "10.0.0.0/24, 10.0.1.0/24, 10.0.2.0/24"
+  IpBlockPrivateSubnet: 
+      Description: "Comma-delimited list of three Private CIDR blocks of all subnets"
+      Type: String
+      Default: "10.0.3.0/24, 10.0.4.0/24, 10.0.5.0/24"
+  MinInstancesAutoscaling:
+    Description: "Cantidad minima de instancias de autoscaling group"
+    Type: Number
+    Default: 1
+  MaxInstancesAutoscaling:
+    Description: "Cantidad maxima de instancias de autoscaling group"
+    Type: Number
+    Default: 1
+  DesiredInstancesAutoscaling:
+    Description: "Cantidad deseada de instancias de autoscaling group"
+    Type: Number
+    Default: 1 
+  DockerImage:
+      Description: "Docker image for the container"
+      Type: String 
+      Default: "492266378106.dkr.ecr.us-west-2.amazonaws.com/nginx-elmer-trambo:latest"
 Resources:
   RolesStack: 
     Type: AWS::CloudFormation::Stack
@@ -29,6 +66,10 @@ Resources:
           - ""
           - - !Ref BucketS3
             - "/Network/network.yml"
+      Parameters:
+          IpBlockPublicSubnet: !Ref IpBlockPublicSubnet
+          IpBlockPrivateSubnet: !Ref IpBlockPrivateSubnet
+          Region: !Ref Region
   LoadBalancerStack: 
     Type: AWS::CloudFormation::Stack
     Properties: 
@@ -48,3 +89,8 @@ Resources:
           AutoscalingRole: !GetAtt RolesStack.Outputs.AutoscalingRole
           EC2Role: !GetAtt RolesStack.Outputs.EC2Role
           ECSServiceRole: !GetAtt RolesStack.Outputs.ECSServiceRole
+          OwnerEmail: !Ref OwnerEmail
+          MinInstancesAutoscaling: !Ref MinInstancesAutoscaling
+          MaxInstancesAutoscaling: !Ref MaxInstancesAutoscaling
+          DesiredInstancesAutoscaling: !Ref DesiredInstancesAutoscaling
+          DockerImage: !Ref DockerImage

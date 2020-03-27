@@ -1,9 +1,14 @@
 Description:  Estrcutra que crea la VPC.
 Parameters: 
-  DbSubnetIpBlocks: 
-      Description: "Comma-delimited list of three CIDR blocks of all subnets"
+  IpBlockPublicSubnet: 
+      Description: "Comma-delimited list of three Public CIDR blocks of all subnets"
       Type: CommaDelimitedList
-      Default: "10.0.0.0/24, 10.0.1.0/24, 10.0.2.0/24, 10.0.3.0/24, 10.0.4.0/24, 10.0.5.0/24"
+  IpBlockPrivateSubnet: 
+      Description: "Comma-delimited list of three Private CIDR blocks of all subnets"
+      Type: CommaDelimitedList
+  Region:
+      Description: "Region para desplegar la vpc"
+      Type: String
 Resources:
   VPC: #>>>>>>>>>>>>>>>>>> VPC <<<<<<<<<<<<<<<<<<<<<<<<<<
     Type: AWS::EC2::VPC
@@ -19,8 +24,8 @@ Resources:
     Properties:
       VpcId:
         Ref: VPC
-      CidrBlock: !Select [ 0, !Ref DbSubnetIpBlocks ]
-      AvailabilityZone: "us-west-2a"
+      CidrBlock: !Select [ 0, !Ref IpBlockPublicSubnet ]
+      AvailabilityZone: !Join ['', [!Ref 'Region', a]]
       Tags:
       - Key: Name
         Value: SN-Elmer-Public-1
@@ -29,8 +34,8 @@ Resources:
     Properties:
       VpcId:
         Ref: VPC
-      CidrBlock: !Select [ 1, !Ref DbSubnetIpBlocks ]
-      AvailabilityZone: "us-west-2b"
+      CidrBlock: !Select [ 1, !Ref IpBlockPublicSubnet ]
+      AvailabilityZone: !Join ['', [!Ref 'Region', b]]
       Tags:
       - Key: Name
         Value: SN-Elmer-Public-2
@@ -39,8 +44,8 @@ Resources:
     Properties:
       VpcId:
         Ref: VPC
-      CidrBlock: !Select [ 2, !Ref DbSubnetIpBlocks ]
-      AvailabilityZone: "us-west-2c"
+      CidrBlock: !Select [ 2, !Ref IpBlockPublicSubnet ]
+      AvailabilityZone: !Join ['', [!Ref 'Region', c]]
       Tags:
       - Key: Name
         Value: SN-Elmer-Public-3
@@ -49,8 +54,8 @@ Resources:
     Properties:
       VpcId:
         Ref: VPC
-      CidrBlock: !Select [ 3, !Ref DbSubnetIpBlocks ]
-      AvailabilityZone: "us-west-2a"
+      CidrBlock: !Select [ 0, !Ref IpBlockPrivateSubnet ]
+      AvailabilityZone: !Join ['', [!Ref 'Region', a]]
       Tags:
       - Key: Name
         Value: SN-Elmer-Private-1
@@ -59,8 +64,8 @@ Resources:
     Properties:
       VpcId:
         Ref: VPC
-      CidrBlock: !Select [ 4, !Ref DbSubnetIpBlocks ]
-      AvailabilityZone: "us-west-2b"
+      CidrBlock: !Select [ 1, !Ref IpBlockPrivateSubnet ]
+      AvailabilityZone: !Join ['', [!Ref 'Region', b]]
       Tags:
       - Key: Name
         Value: SN-Elmer-Private-2
@@ -69,8 +74,8 @@ Resources:
     Properties:
       VpcId:
         Ref: VPC
-      CidrBlock: !Select [ 5, !Ref DbSubnetIpBlocks ]
-      AvailabilityZone: "us-west-2c"
+      CidrBlock: !Select [ 2, !Ref IpBlockPrivateSubnet ]
+      AvailabilityZone: !Join ['', [!Ref 'Region', c]]
       Tags:
       - Key: Name
         Value: SN-Elmer-Private-3

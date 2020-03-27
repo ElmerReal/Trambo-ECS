@@ -32,6 +32,28 @@ Parameters:
   ECSServiceRole:
     Description: "Rol ECS"
     Type: String
+  OwnerEmail:
+      Description: "email of the owner"
+      Type: String
+  DockerImage:
+      Description: "Docker image for the container"
+      Type: String
+  MinInstancesAutoscaling:
+    Description: "Cantidad minima de instancias de autoscaling group"
+    Type: Number
+    Default: 1
+  MaxInstancesAutoscaling:
+    Description: "Cantidad maxima de instancias de autoscaling group"
+    Type: Number
+    Default: 1
+  DesiredInstancesAutoscaling:
+    Description: "Cantidad deseada de instancias de autoscaling group"
+    Type: Number
+    Default: 1  
+  ImageId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Description: Use an Image from SSM Parameter Store
+    Default: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
 Resources:
   ECSCluster: #Cluster Creado
     Type: AWS::ECS::Cluster
@@ -43,14 +65,14 @@ Resources:
               - !Ref ClusterPadre
       Tags:
         - Key: Owner
-          Value: elmerreal98@gmail.com
+          Value: !Ref OwnerEmail
   taskdefinition: #TaskDefinition
     Type: AWS::ECS::TaskDefinition
     Properties: 
       ContainerDefinitions: 
       - 
         Name: "Nginx-Service"
-        Image: "492266378106.dkr.ecr.us-west-2.amazonaws.com/nginx-elmer-trambo:latest"
+        Image: !Ref DockerImage
         PortMappings: 
           - 
             ContainerPort: 80
@@ -61,7 +83,7 @@ Resources:
         -  EC2
       Tags:
         - Key: Owner
-          Value: elmerreal98@gmail.com
+          Value: !Ref OwnerEmail
   service:
     Type: AWS::ECS::Service
     DependsOn: ALBListener
@@ -102,7 +124,7 @@ Resources:
       SecurityGroups: !Split [",",!Ref 'RefSG']
       Tags:
         - Key: Owner
-          Value: elmerreal98@gmail.com
+          Value: !Ref OwnerEmail
   ALBListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
@@ -143,9 +165,9 @@ Resources:
     Properties:
       VPCZoneIdentifier: !Split [",",!Ref 'RefSubnetPublica']
       LaunchConfigurationName: !Ref 'LaunchConf'
-      MinSize: 1
-      MaxSize: 1
-      DesiredCapacity: 1
+      MinSize: !Ref MinInstancesAutoscaling
+      MaxSize: !Ref MaxInstancesAutoscaling
+      DesiredCapacity: !Ref DesiredInstancesAutoscaling
     CreationPolicy:
       ResourceSignal:
         Timeout: PT15M
@@ -156,7 +178,7 @@ Resources:
     Type: AWS::AutoScaling::LaunchConfiguration
     Properties: 
       AssociatePublicIpAddress: True
-      ImageId: "ami-014a2e30da708ee8b"
+      ImageId: !Ref ImageId
       IamInstanceProfile: !Ref 'EC2InstanceProfile'
       SecurityGroups: !Split [",",!Ref 'RefSG']
       InstanceType: !Ref EC2TYPE
